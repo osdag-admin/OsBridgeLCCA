@@ -1,5 +1,6 @@
 import importlib
 import sys
+sys.stdout.reconfigure(encoding='utf-8')
 
 # List of required packages
 REQUIRED_PACKAGES = [
