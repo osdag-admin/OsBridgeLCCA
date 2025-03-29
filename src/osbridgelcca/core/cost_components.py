@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+import pandas as pd
+
 
 
 class CostComponent(ABC):
@@ -44,10 +46,9 @@ def calculate_pwf(discount_rate=None, design_life=None, is_initial=False, is_rec
 
 
 class InitialConstructionCost(CostComponent):
-    def __init__(self, quantity, rate):
+    def __init__(self, material_boq: pd.DataFrame):
         super().__init__()
-        self.quantity = quantity
-        self.rate = rate
+        self.material_boq = material_boq
         self.category = "Economic"
         self.is_initial = True
         self.is_recurring = False
@@ -55,14 +56,13 @@ class InitialConstructionCost(CostComponent):
         self.amount = self.calculate_cost()
 
     def calculate_cost(self):
-        return self.quantity * self.rate
+        return (self.material_boq.iloc[:, 2] * self.material_boq.iloc[:, 3]).sum()
 
 
 class InitialCarbonEmissionCost(CostComponent):
-    def __init__(self, material_quantity, carbon_emission_factor, carbon_cost):
+    def __init__(self, material_boq: pd.DataFrame, carbon_cost):
         super().__init__()
-        self.material_quantity = material_quantity
-        self.carbon_emission_factor = carbon_emission_factor
+        self.material_boq = material_boq
         self.carbon_cost = carbon_cost
         self.category = "Environmental"
         self.is_initial = True
@@ -71,7 +71,58 @@ class InitialCarbonEmissionCost(CostComponent):
         self.amount = self.calculate_cost()
 
     def calculate_cost(self):
-        return (self.material_quantity * self.carbon_emission_factor) * self.carbon_cost
+        return self.carbon_cost * (self.material_boq.iloc[:, 2] * self.material_boq.iloc[:, 4]).sum()
+
+
+class TimeCost(CostComponent):
+    def __init__(self, construction_cost, interest_rate, construction_time, investment_ratio):
+        super().__init__()
+        self.construction_cost = construction_cost
+        self.interest_rate = interest_rate
+        self.construction_time = construction_time
+        self.investment_ratio = investment_ratio
+        self.category = "Economic"
+        self.is_initial = True
+        self.is_recurring = False
+        self.pwf = calculate_pwf(is_initial=True)
+        self.amount = self.calculate_cost()
+
+    def calculate_cost(self):
+        return self.construction_cost * self.interest_rate * self.construction_time * self.investment_ratio
+
+
+class RoadUserCost(CostComponent):
+    def __init__(self, vehicles_affected, vehicle_operation_cost, construction_time):
+        super().__init__()
+        self.vehicles_affected = vehicles_affected
+        self.vehicle_operation_cost = vehicle_operation_cost
+        self.construction_time = construction_time
+        self.delay_cost = 0.00
+        self.category = "Economic"
+        self.is_initial = True
+        self.is_recurring = False
+        self.pwf = 1.0
+        self.amount = self.calculate_cost()
+
+    def calculate_cost(self):
+        return self.vehicles_affected * (self.vehicle_operation_cost + self.delay_cost) * self.construction_time
+
+
+class ReroutingCarbonEmissionCost(CostComponent):
+    def __init__(self, vehicles_affected, reroute_distance, co2_emission_per_km, carbon_cost):
+        super().__init__()
+        self.vehicles_affected = vehicles_affected
+        self.reroute_distance = reroute_distance
+        self.co2_emission_per_km = co2_emission_per_km
+        self.carbon_cost = carbon_cost
+        self.category = "Environmental"
+        self.is_initial = True
+        self.is_recurring = False
+        self.pwf = 1.0
+        self.amount = self.calculate_cost()
+
+    def calculate_cost(self):
+        return self.vehicles_affected * self.reroute_distance * self.co2_emission_per_km * self.carbon_cost
 
 
 class PeriodicMaintenanceCost(CostComponent):
@@ -85,11 +136,31 @@ class PeriodicMaintenanceCost(CostComponent):
         self.category = "Economic"
         self.is_initial = False
         self.is_recurring = True
-        self.pwf = calculate_pwf(discount_rate, design_life, is_recurring=True, interval=interval)
+        self.pwf = calculate_pwf(discount_rate, design_life=self.design_life, is_recurring=self.is_recurring,
+                                 interval=interval)
         self.amount = self.calculate_cost()
 
     def calculate_cost(self):
         return self.maintenance_cost_rate * self.construction_cost * self.pwf
+
+
+class PeriodicMaintenanceCarbonEmissionCost(CostComponent):
+    def __init__(self, material_quantity, carbon_emission_factor, carbon_cost, discount_rate, interval, design_life):
+        super().__init__()
+        self.material_quantity = material_quantity
+        self.carbon_emission_factor = carbon_emission_factor
+        self.carbon_cost = carbon_cost
+        self.discount_rate = discount_rate
+        self.interval = interval
+        self.design_life = design_life
+        self.category = "Environmental"
+        self.is_initial = False
+        self.is_recurring = True
+        self.pwf = calculate_pwf(discount_rate, design_life, is_recurring=True, interval=interval)
+        self.amount = self.calculate_cost()
+
+    def calculate_cost(self):
+        return self.material_quantity * self.carbon_emission_factor * self.carbon_cost * self.pwf
 
 
 class RoutineInspectionCost(CostComponent):

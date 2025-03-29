@@ -4,7 +4,7 @@ from src.osbridgelcca.core.cost_components import (
     InitialCarbonEmissionCost,
     TimeCost,
     RoadUserCost,
-    AdditionalCarbonEmissionCost,
+    ReroutingCarbonEmissionCost,
     PeriodicMaintenanceCost,
     PeriodicMaintenanceCarbonCost,
     RoutineInspectionCost,
@@ -22,7 +22,7 @@ def test_initial_carbon_emission_cost():
     assert cost.calculate_cost() == 2000
 
 def test_time_cost():
-    cost = TimeCost(construction_cost=10000, interest_rate=0.05, time=2, investment_ratio=0.8)
+    cost = TimeCost(construction_cost=10000, interest_rate=0.05, construction_time=2, investment_ratio=0.8)
     assert cost.calculate_cost() == 800.0
 
 def test_road_user_cost():
@@ -30,7 +30,7 @@ def test_road_user_cost():
     assert cost.calculate_cost() == 10000
 
 def test_additional_carbon_emission_cost():
-    cost = AdditionalCarbonEmissionCost(vehicles_affected=1000, reroute_distance=10, co2_emission_per_km=0.5, carbon_cost=20)
+    cost = ReroutingCarbonEmissionCost(vehicles_affected=1000, reroute_distance=10, co2_emission_per_km=0.5, carbon_cost=20)
     assert cost.calculate_cost() == 100000.0
 
 def test_periodic_maintenance_cost():
