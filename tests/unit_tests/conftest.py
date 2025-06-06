@@ -1,12 +1,5 @@
-import pytest
-from backend.main import app as flask_app
+import sys
+import os
 
-@pytest.fixture
-def client():
-    """Flask test client"""
-    return flask_app.test_client()
-
-@pytest.fixture
-def sample_cost_data():
-    """Sample cost data for testing"""
-    return {"quantity": 100, "rate": 500}
+# Add the src_web directory to sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src_web')))
