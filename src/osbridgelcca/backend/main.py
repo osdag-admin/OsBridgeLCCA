@@ -1,1 +1,3 @@
-# Placeholder for Flask API entry point
+from osbridgelcca.backend.database import init_database
+
+init_database()
