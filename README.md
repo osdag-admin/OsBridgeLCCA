@@ -59,17 +59,17 @@ python scripts/verify_installation.py
 
 ### 🖥️ **Running the Desktop Application**
 ```sh
-python src/osbridgelcca/desktop/app.py
+python src_web/osbridgelcca/desktop/app.py
 ```
 
 ### 🌐 **Running the Web Application**
 #### **Start the Backend Server**
 ```sh
-python src/osbridgelcca/backend/manage.py runserver
+python src_web/osbridgelcca/backend/manage.py runserver
 ```
 #### **Start the Frontend**
 ```sh
-cd src/osbridgelcca/web
+cd src_web/osbridgelcca/web
 npm install
 npm start
 ```
