@@ -1,0 +1,13 @@
+django
+djangorestframework
+pyqt5
+plotly
+pylatex
+pytest
+matplotlib
+pandas
+numpy
+psycopg2-binary
+requests
+flask
+gunicorn

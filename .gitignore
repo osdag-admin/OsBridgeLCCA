@@ -23,7 +23,7 @@ logs/
 app_crash.log
 
 # Database files
-data/databases/*.db
+#data/databases/*.db     (ALlowed git to consider .db files)
 data/databases/*.sqlite3
 
 # Flask and Django
