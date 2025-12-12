@@ -1,0 +1,21 @@
+Metadata-Version: 2.4
+Name: osbridgelcca
+Version: 0.1.0
+Summary: Life Cycle Cost Analysis for Bridges
+Author-email: Your Name <your.email@example.com>
+License: MIT
+License-File: LICENSE
+Requires-Dist: django
+Requires-Dist: djangorestframework
+Requires-Dist: pyqt5
+Requires-Dist: plotly
+Requires-Dist: pylatex
+Requires-Dist: pytest
+Requires-Dist: matplotlib
+Requires-Dist: pandas
+Requires-Dist: numpy
+Requires-Dist: psycopg2-binary
+Requires-Dist: requests
+Requires-Dist: flask
+Requires-Dist: gunicorn
+Dynamic: license-file
